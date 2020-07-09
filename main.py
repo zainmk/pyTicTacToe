@@ -9,15 +9,19 @@ from random import randint
 import numpy as np
 from math import inf as infinity
 
+MAX = 1
+MIN = -1
+HUMAN = -1
+COMP = 1
+
+
 tk = Tk()
 tk.title("Tic Tac Toe")
 
 # Should remove the global variable and pass them as arguments in a function
 
-win = False
 clickCounter = 1  # Be careful changing this value, as to determine a tie is to see if clickCounter = 10
 buttonsDict = {1: " ", 2: " ", 3: " ", 4: " ", 5: " ", 6: " ", 7: " ", 8: " ", 9: " "}
-winner = "No Winner Yet"
 
 print("Welcome to Tic Tac Toe")
 print("Choose a difficultly for the Computer")
@@ -31,13 +35,111 @@ choice = int(input())
 
 # Note that when you pass buttonsDict[] as board, you're passing the reference to buttonsDict[]
 # Make a copy of it to work with so you don't change the actual values.
-def hard_computer(board, ):
-    pass
+
+# Using the MINMAX game theory
+def minimax(board, depth, player):
+    if player == MAX:
+        best = [-1, -1, -infinity]
+    else:
+        best = [-1, -1, +infinity]
+
+    # Need to convert matrix back to boardDict
+    boardDict = {}
+    for i in range(0, 3):
+        for j in range(0, 3):
+            indexNumber = i*3 + j + 1
+            if board[i][j] == 0:
+                boardDict[indexNumber] = " "
+            elif board[i][j] == 1:
+                boardDict[indexNumber] = "O"
+            elif board[i][j] == -1:
+                boardDict[indexNumber] = "X"
+
+    win, winner = check_win(boardDict)
+
+    if depth == 0 or win:
+        if winner == "X":  # If the person wins this state
+            return [-1, -1, -1]
+        elif winner == "O":  # If the computer wins this state
+            return [-1, -1, 1]
+        else:  # If the game ends as a tie, otherwise winner = "Tie"
+            return [-1, -1, 0]
+
+    emptyCells = []
+    for x, row in enumerate(board):
+        for y, cell in enumerate(row):
+            if cell == 0:
+                emptyCells.append([x, y])
+
+    for cell in emptyCells:
+        x, y = cell[0], cell[1]
+        board[x][y] = player  # Player is designated as 1 or -1, the state of the board needs a numeric evaluation
+        score = minimax(board, depth - 1, -player)
+        board[x][y] = 0
+
+        score[0], score[1] = x, y
+
+        if player == MAX:
+            if score[2] > best[2]:
+                best = score
+        else:
+            if score[2] < best[2]:
+                best = score
+
+    return best
+
+
+def hard_computer(board):
+    # We make a copy of the current state of the board and input it into the minimax function
+    newBoard = {}
+    for x in board:
+        newBoard[x] = board[x]
+
+    # We may need to convert our current state of the board to 3x3 matrix with 1 and -1 and 0 for empty
+    boardMatrix = [[0, 0, 0],
+                   [0, 0, 0],
+                   [0, 0, 0]]
+    counter = 0
+    for i in range(0, 3):
+        for j in range(0, 3):
+            counter = counter + 1
+            if newBoard[counter] == "X":
+                boardMatrix[i][j] = -1
+            elif newBoard[counter] == "O":
+                boardMatrix[i][j] = 1
+            else:
+                boardMatrix[i][j] = 0
+
+    initialDepth = 0
+    for x in board:
+        if board[x] == " ":
+            initialDepth = initialDepth + 1
+
+    bestMove = minimax(boardMatrix, initialDepth, COMP)
+    bestIndexPoint = bestMove[0]*3 + bestMove[1] + 1
+
+    if bestIndexPoint == 1:
+        button1.invoke()
+    if bestIndexPoint == 2:
+        button2.invoke()
+    if bestIndexPoint == 3:
+        button3.invoke()
+    if bestIndexPoint == 4:
+        button4.invoke()
+    if bestIndexPoint == 5:
+        button5.invoke()
+    if bestIndexPoint == 6:
+        button6.invoke()
+    if bestIndexPoint == 7:
+        button7.invoke()
+    if bestIndexPoint == 8:
+        button8.invoke()
+    if bestIndexPoint == 9:
+        button9.invoke()
 
 
 def med_computer(board):
     global clickCounter
-    global win
     randomNumber = 0
 
     while randomNumber == 0:

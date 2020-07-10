@@ -1,7 +1,8 @@
-# Consider the following link
-# https://www.skillshare.com/classes/Creating-a-TIC-TAC-TOE-game-using-Python-and-Tkinter/886857159
-
-# Issue where the win window comes up twice.
+# --------------------------------------------------------------------------------------------------------------------#
+#                                                   pyTicTacToe
+# This code simulates a game of Tic Tac Toe, with various difficulties of computer that the player can play against, or
+#                       the player can play against another human player if he/she so chooses.
+# --------------------------------------------------------------------------------------------------------------------#
 
 from tkinter import *
 import tkinter.messagebox
@@ -11,16 +12,12 @@ from math import inf as infinity
 
 MAX = 1
 MIN = -1
-HUMAN = -1
-COMP = 1
 
 
 tk = Tk()
 tk.title("Tic Tac Toe")
 
-# Should remove the global variable and pass them as arguments in a function
-
-clickCounter = 1  # Be careful changing this value, as to determine a tie is to see if clickCounter = 10
+clickCounter = 1
 buttonsDict = {1: " ", 2: " ", 3: " ", 4: " ", 5: " ", 6: " ", 7: " ", 8: " ", 9: " "}
 
 print("Welcome to Tic Tac Toe")
@@ -32,11 +29,7 @@ print("4. Player vs Player")
 
 choice = int(input())
 
-
-# Note that when you pass buttonsDict[] as board, you're passing the reference to buttonsDict[]
-# Make a copy of it to work with so you don't change the actual values.
-
-# Using the MINMAX game theory
+# Using the recursive MINIMAX game theory for the hard_comp() function.
 def minimax(board, depth, player):
     if player == MAX:
         best = [-1, -1, -infinity]
@@ -85,17 +78,22 @@ def minimax(board, depth, player):
         else:
             if score[2] < best[2]:
                 best = score
-
     return best
 
 
+# The following function is for the hard_computer() option. The computer in this case uses the minimax game theory. In
+# the case of a 2 player game, such as Tic Tac Toe, the computer evaluates states of the game from the potential moves
+# it could make, and the potential moves the player could respond with. After playing out these game states, the
+# computer chooses the move that would result it to either win or draw (with a preference for win) and in the fewest
+# moves possible.
 def hard_computer(board):
     # We make a copy of the current state of the board and input it into the minimax function
     newBoard = {}
     for x in board:
         newBoard[x] = board[x]
 
-    # We may need to convert our current state of the board to 3x3 matrix with 1 and -1 and 0 for empty
+    # We convert the current state of the board to a 3 by 3 matrix for minimax to evaluate the states. + 1 is for the
+    # computer while -1 is designated for the player.
     boardMatrix = [[0, 0, 0],
                    [0, 0, 0],
                    [0, 0, 0]]
@@ -110,12 +108,13 @@ def hard_computer(board):
             else:
                 boardMatrix[i][j] = 0
 
-    initialDepth = 0
-    for x in board:
-        if board[x] == " ":
-            initialDepth = initialDepth + 1
+    # The initial depth of the minimax tree has the potential to go as far as there are remaining moves to make in the
+    # game. We use the current state of the clickCounter to determine the remaining amount of moves.
 
-    bestMove = minimax(boardMatrix, initialDepth, COMP)
+    initialDepth = 10 - clickCounter
+
+    # bestMove returns an index point of a 3 by 3 matrix, we convert it back to our move selection format (1-9)
+    bestMove = minimax(boardMatrix, initialDepth, MAX)
     bestIndexPoint = bestMove[0]*3 + bestMove[1] + 1
 
     if bestIndexPoint == 1:
@@ -138,8 +137,8 @@ def hard_computer(board):
         button9.invoke()
 
 
+# med_computer() randomly selects one of the free available choices it could make, and places its marker in that spot.
 def med_computer(board):
-    global clickCounter
     randomNumber = 0
 
     while randomNumber == 0:
@@ -169,9 +168,8 @@ def med_computer(board):
         button9.invoke()
 
 
+# easy_computer is where the computer simply chooses the next available empty spot.
 def easy_computer(board):
-    global clickCounter
-    global buttonsDict
     nextButton = 0
 
     for x in range(1, 10):
@@ -199,10 +197,8 @@ def easy_computer(board):
         button9.invoke()
 
 
-# This function will return True if the game is over, and a winner if there is one
+# check_win() determines if there is a winner for the current state of the game as well as who that winner is
 def check_win(board):
-    global clickCounter
-
     if board[1] != " " and board[1] == board[2] == board[3]:
         return True, board[1]
     elif board[4] != " " and board[4] == board[5] == board[6]:
@@ -225,6 +221,8 @@ def check_win(board):
         return False, "No"
 
 
+# clicker() is the main driving function of the game. Every click that is made on a button on the GUI leads to this
+# function, where the computer can respond and determine if there is a winner.
 def clicker(buttons, number):
     global clickCounter
     global buttonsDict
@@ -258,6 +256,7 @@ def clicker(buttons, number):
             tk.quit()
 
 
+# The following create the buttons on the tkinter GUI that is displayed to the user.
 button1 = Button(tk, text=" ", font=('Times 26 bold'), height=4, width=8, command=lambda: clicker(button1, 1))
 button1.grid(row=0, column=0, sticky=S+N+E+W)
 
@@ -284,10 +283,5 @@ button8.grid(row=2, column=1, sticky=S+N+E+W)
 
 button9 = Button(tk, text=" ", font=('Times 26 bold'), height=4, width=8, command=lambda: clicker(button9, 9))
 button9.grid(row=2, column=2, sticky=S+N+E+W)
-
-# When the Computer goes first
-if clickCounter == 2:
-    button1.invoke()  # Invoke the first move the computer should make
-
 
 tk.mainloop()  # Continuously loops till the GUI is closed.

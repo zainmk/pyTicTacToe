@@ -1,18 +1,10 @@
-# --------------------------------------------------------------------------------------------------------------------#
-#                                                   pyTicTacToe
-# This code simulates a game of Tic Tac Toe, with various difficulties of computer that the player can play against, or
-#                       the player can play against another human player if he/she so chooses.
-# --------------------------------------------------------------------------------------------------------------------#
-
 from tkinter import *
 import tkinter.messagebox
 from random import randint
-import numpy as np
 from math import inf as infinity
 
 MAX = 1
 MIN = -1
-
 
 tk = Tk()
 tk.title("Tic Tac Toe")

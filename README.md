@@ -28,9 +28,5 @@ The computer has several levels of difficulty...
 
         python3 main.py
 
-<br/>
-
-| **SAMPLE IMAGES** |
-
-
-![alt text](SampleOutput.JPG)
+#### ex. 
+https://github.com/user-attachments/assets/2f96fb88-e50b-458b-88a3-a115373191f5
